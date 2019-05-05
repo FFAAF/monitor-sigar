@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="layout">
+<head>
+    <title>首页</title>
+</head>
+<section layout:fragment="content">
+    <!-- top tiles -->
+    <div class="row tile_count">
+        <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+            <span class="count_top"><i class="fa fa-user"></i> 用户总数 </span>
+            <div class="count" th:text="${userCount}">2500</div>
+            <span class="count_bottom"><i class="green">4% </i> From last Week</span>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+            <span class="count_top"><i class="fa fa-clock-o"></i> 新用户数量 </span>
+            <div class="count" th:text="${newJoin}">123.50</div>
+            <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>3% </i> From last Week</span>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+            <span class="count_top"><i class="fa fa-user"></i> CPU使用率 </span>
+            <div class="count" id="cpuPer">0%</div>
+            <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+            <span class="count_top"><i class="fa fa-user"></i> 内存使用率 </span>
+            <div class="count" id="memPer">0%</div>
+            <span class="count_bottom"><div id="memUse"></div></span>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+            <span class="count_top"><i class="fa fa-user"></i> Total Collections</span>
+            <div class="count">2,315</div>
+            <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+            <span class="count_top"><i class="fa fa-user"></i> Total Connections</span>
+            <div class="count">7,325</div>
+            <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>
+        </div>
+    </div>
+    <!-- /top tiles -->
+
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>服务器性能</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">Settings 1</a>
+                                </li>
+                                <li><a href="#">Settings 2</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><a class="close-link"><i class="fa fa-close"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div id="CPU_info" style="height: 500px"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>磁盘使用率</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">Settings 1</a>
+                                </li>
+                                <li><a href="#">Settings 2</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><a class="close-link"><i class="fa fa-close"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div id="fileSys" style="height: 500px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</html>
+
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+
+    var dom = document.getElementById("CPU_info");
+    var myChart = echarts.init(dom);
+    var app=[];
+    var totalMem=0;
+    $.get("/api/sys/memory",function (mem) {
+        totalMem=mem.total;
+    })
+
+    option = {
+        title: {
+            text: '性能数据',
+            subtextStyle:{
+                width:200
+            },
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                label: {
+                    backgroundColor: '#283b56'
+                }
+            }
+        },
+        legend: {
+            data:['CPU使用率', '内存占用']
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                dataView: {readOnly: false},
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        dataZoom: {
+            show: false,
+            start: 0,
+            end: 100
+        },
+        xAxis: [
+            {
+                type: 'category',
+                boundaryGap: true,
+                data: (function (){
+                    var now = new Date();
+                    var res = [];
+                    var len = 100;
+                    while (len--) {
+                        res.unshift(now.toLocaleTimeString().replace(/^\D*/,''));
+                        now = new Date(now - 2000);
+                    }
+                    return res;
+                })()
+            }
+            // {
+            //     type: 'category',
+            //     boundaryGap: true,
+            //     data: (function (){
+            //         var res = [];
+            //         var len = 100;
+            //         while (len--) {
+            //             res.push(10 - len - 1);
+            //         }
+            //         return res;
+            //     })()
+            // }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                scale: true,
+                max: 100,
+                min: 0,
+                boundaryGap: [0.2, 0.2]
+            },
+        ],
+        series: [
+            {
+                name:'内存占用',
+                type:'line',
+                symbol:"none",
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                data:(function (){
+                    var res = [];
+                    var len = 100;
+                    while (len--) {
+                        res.push(0);
+                    }
+                    return res;
+                })()
+            },
+            {
+                name:'CPU使用率',
+                type:'line',
+                symbol:"none",
+                smooth:true,
+                areaStyle:{
+                    normal:{
+
+                    }
+                },
+                data:(function (){
+                    var res = [];
+                    var len = 0;
+                    while (len < 100) {
+                        res.push(0);
+                        len++;
+                    }
+                    return res;
+                })()
+            }
+        ]
+    };
+
+    app.count = 11;
+    setInterval(function (){
+        var data0 = option.series[0].data;
+        var data1 = option.series[1].data;
+        var memTotal=0;
+        var memUsed=0;
+        axisData = (new Date()).toLocaleTimeString().replace(/^\D*/,'');
+        var ave=0;
+        $.get("/api/sys/cpu",function (cpus) {
+            var sum=0;
+            $.each(cpus,function (k,v) {
+                sum=sum+v.combined;
+            })
+            ave= sum/cpus.length*100
+            data1.shift();
+            data1.push(ave);
+            $("#cpuPer").empty();
+            $("#cpuPer").append(Math.floor(ave)+"%");
+
+        })
+
+        $.get("/api/sys/memory",function (mem) {
+            data0.shift();
+            data0.push(mem.usedPercent)
+            memTotal=mem.total/(1024*1024*1024);
+            memUsed=mem.used/(1024*1024*1024);
+
+            $("#memPer").empty();
+            $("#memPer").append(Math.floor(mem.usedPercent)+"%");
+            $("#memUse").empty();
+            $("#memUse").append("已使用："+memUsed.toFixed(1)+"/"+memTotal.toFixed(1)+"GB")
+        })
+
+
+        // data0.shift();
+        // data0.push(Math.round(Math.random() * 1000));
+        // data1.shift();
+        // // data1.push((Math.random() * 10 + 5).toFixed(1) - 0);
+        // data1.push(cpuAve);
+        option.xAxis[0].data.shift();
+        option.xAxis[0].data.push(axisData);
+        // option.xAxis[1].data.shift();
+        // option.xAxis[1].data.push(app.count++);
+        var cpu=data1.slice(-1);
+        var memory=data0.slice(-1);
+        // $("#cpuPer").empty();
+        // $("#cpuPer").append(Math.floor(cpu)+"%");
+        // $("#memPer").empty();
+        // $("#memPer").append(Math.floor(memory)+"%");
+        // $("#memUse").empty();
+        // $("#memUse").append(memUsed.toFixed(1)+"/"+memTotal.toFixed(1)+"GB")
+        myChart.setOption(option);
+    }, 1000);
+
+
+    var fileSysBar=echarts.init(document.getElementById("fileSys"));
+
+
+    var ydata=[];
+    var used=[];
+    var avail=[];
+    var total=[];
+    $.get("/api/sys/fileSys",function (result) {
+        $.each(result,function (i,item) {
+            ydata.push(item.name);
+            used.push((item.used/1024/1024).toFixed(2));
+            avail.push((item.avail/1024/1024).toFixed(2));
+            total.push((item.total/1024/1024).toFixed(0));
+
+        })
+
+
+    file_option = {
+        tooltip : {
+            trigger: 'axis',
+            axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+            },
+        },
+        legend: {
+            data: ['已用空间', '可用空间']
+        },
+        grid: {
+            containLabel: true
+        },
+        xAxis:  {
+            name:'GB',
+            type: 'value'
+        },
+        yAxis: {
+            name:'盘符名',
+            type: 'category',
+            data:ydata
+        },
+        series: [
+            {
+                name:'总容量',
+                type:'bar',
+                silent:'true',
+                barGap:'-100%',
+                label: {
+                    normal: {
+                        show: true,
+                        position:'right'
+                    }
+                },
+                data:total
+
+            },
+            {
+                name: '已用空间',
+                type: 'bar',
+                stack: '总量',
+                label: {
+                    normal: {
+                        show: true,
+                    }
+                },
+                data:used
+            },
+            {
+                name: '可用空间',
+                type: 'bar',
+                stack: '总量',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'insideRight'
+                    }
+                },
+                data:avail
+            },
+        ]
+    };
+    fileSysBar.setOption(file_option);
+    })
+</script>
+
+
+<!-- jQuery -->
+<script src="../vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- FastClick -->
+<script src="../vendors/fastclick/lib/fastclick.js"></script>
+<!-- NProgress -->
+<script src="../vendors/nprogress/nprogress.js"></script>
+<!-- jQuery custom content scroller -->
+<script src="../vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+
+<!-- Custom Theme Scripts -->
+<script src="../build/js/custom.min.js"></script>

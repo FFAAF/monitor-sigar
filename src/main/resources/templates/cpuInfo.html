@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="layout">
+<head>
+    <meta charset="UTF-8">
+    <title>CPU使用详情</title>
+</head>
+<section layout:fragment="content">
+    <div class="row">
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            <div id="main" style="height: 600px" ></div>
+        </div>
+        <div  class="col-md-4 col-sm-4">
+            <h1>CPU信息</h1>
+            <div id="cpu_info"></div>
+        </div>
+    </div>
+    <div class="row" id="list">
+<!--        <div class="col-md-3 col-sm-3 col-xs-6">-->
+<!--            <div class="x_panel">-->
+<!--                <div class="x_title">-->
+<!--                    <h2>CPU_0</h2>-->
+<!--                    <ul class="nav navbar-right panel_toolbox">-->
+<!--                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>-->
+<!--                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
+<!--                    </ul>-->
+<!--                    <div class="clearfix"></div>-->
+<!--                </div>-->
+<!--                <div class="x_content">-->
+<!--                    <div id="" style="height: 500px"></div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+    </div>
+
+
+
+</section>
+</html>
+
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var cpu_length=8;
+        var cpu_echarts=[];
+        var sys=[];
+        var user=[];
+        var wait=[];
+        var nice=[];
+        var dom = document.getElementById("main");
+        var myChart = echarts.init(dom);
+        var dd=[];
+        for(i=0;i<50;i++){
+            dd.push(0);
+        }
+        for(var i=0;i<8;i++){
+            $("#list").append('        <div class="col-md-4 col-sm-4 col-xs-6">\n' +
+                '            <div class="x_panel">\n' +
+                '                <div class="x_title">\n' +
+                '                    <h2>CPU_'+i+'</h2>\n' +
+                '                    <ul class="nav navbar-right panel_toolbox">\n' +
+                '                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>\n' +
+                '                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>\n' +
+                '                    </ul>\n' +
+                '                    <div class="clearfix"></div>\n' +
+                '                </div>\n' +
+                '                <div class="x_content">\n' +
+                '                    <div id="CPU_'+ i +'" style="height: 400px"></div>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '        </div>')
+            cpu_echarts[i]=echarts.init(document.getElementById("CPU_"+i));
+            sys[i]=dd;
+            user[i]=dd;
+            wait[i]=dd;
+            nice[i]=dd;
+        }
+
+        $.get("/api/sys/cpuInfo",function (data) {
+            $("#cpu_info").append("<h3>Cpu品牌："+data[0].vendor+"</br>"+'Cpu型号：'+data[0].model+"</br>"+"内核数："+data[0].totalCores+"</h3>")
+        })
+
+
+        var option = {
+            title: {
+                text: 'CPU数据',
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: {
+                        backgroundColor: '#283b56'
+                    }
+                }
+            },
+            legend: {
+                data:['系统使用率', '用户使用率','错误率','等待率']
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    dataView: {readOnly: false},
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            dataZoom: {
+                show: false,
+                start: 0,
+                end: 100
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    boundaryGap: true,
+                    data: (function (){
+                        var now = new Date();
+                        var res = [];
+                        var len = 100;
+                        while (len--) {
+                            res.unshift(now.toLocaleTimeString().replace(/^\D*/,''));
+                            now = new Date(now - 1000);
+                        }
+                        return res;
+                    })()
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    scale: true,
+                    max: 100,
+                    min: 0,
+                    boundaryGap: [0.2, 0.2]
+                }
+            ],
+            series: [
+                {
+                    name:'系统使用率',
+                    type:'line',
+                    symbol:"none",
+                    smooth:true,
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    data:(function (){
+                        var res = [];
+                        var len = 100;
+                        while (len--) {
+                            res.push(0);
+                        }
+                        return res;
+                    })()
+                },
+                {
+                    name:'用户使用率',
+                    type:'line',
+                    symbol:"none",
+                    smooth:true,
+                    areaStyle:{
+                        normal:{
+
+                        }
+                    },
+                    data:(function (){
+                        var res = [];
+                        var len = 0;
+                        while (len < 100) {
+                            res.push(0);
+                            len++;
+                        }
+                        return res;
+                    })()
+                },
+                {
+                    name:'错误率',
+                    type:'line',
+                    symbol:"none",
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    data:(function (){
+                        var res = [];
+                        var len = 100;
+                        while (len--) {
+                            res.push(0);
+                        }
+                        return res;
+                    })()
+                },
+                {
+                    name:'等待率',
+                    type:'line',
+                    symbol:"none",
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    data:(function (){
+                        var res = [];
+                        var len = 100;
+                        while (len--) {
+                            res.push(0);
+                        }
+                        return res;
+                    })()
+                }
+            ]
+        };
+
+        subOption = {
+            animation:false,
+            title: {
+                text: 'CPU数据',
+                subtext: '系统使用率：0%'+'\n'+'用户使用率：0%'+'\n'+'错误率：0%'+'\n'+'等待率：0%',
+                subtextStyle:{
+                    width:"150px"
+                },
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: {
+                        backgroundColor: '#283b56'
+                    }
+                }
+            },
+            legend: {
+                data:['系统使用率', '用户使用率','错误率','等待率']
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    dataView: {readOnly: false},
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            dataZoom: {
+                show: false,
+                start: 0,
+                end: 100
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    boundaryGap: true,
+                    data: (function (){
+                        var now = new Date();
+                        var res = [];
+                        var len = 50;
+                        while (len--) {
+                            res.unshift(now.toLocaleTimeString().replace(/^\D*/,''));
+                            now = new Date(now - 1000);
+                        }
+                        return res;
+                    })()
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    scale: true,
+                    max: 100,
+                    min: 0,
+                    boundaryGap: [0.2, 0.2]
+                }
+            ],
+            series: [
+                {
+                    name:'系统使用率',
+                    type:'line',
+                    symbol:"none",
+                    smooth:true,
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    data:(function (){
+                        var res = [];
+                        var len = 50;
+                        while (len--) {
+                            res.push(0);
+                        }
+                        return res;
+                    })()
+                },
+                {
+                    name:'用户使用率',
+                    type:'line',
+                    symbol:"none",
+                    smooth:true,
+                    areaStyle:{
+                        normal:{
+
+                        }
+                    },
+                    data:(function (){
+                        var res = [];
+                        var len = 50;
+                        while (len--) {
+                            res.push(0);
+                        }
+                        return res;
+                    })()
+                },
+                {
+                    name:'错误率',
+                    type:'line',
+                    symbol:"none",
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    data:(function (){
+                        var res = [];
+                        var len = 50;
+                        while (len--) {
+                            res.push(0);
+                        }
+                        return res;
+                    })()
+                },
+                {
+                    name:'等待率',
+                    type:'line',
+                    symbol:"none",
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    data:(function (){
+                        var res = [];
+                        var len = 50;
+                        while (len--) {
+                            res.push(0);
+                        }
+                        return res;
+                    })()
+                }
+            ]
+        };
+        setInterval(function (){
+            var data0 = option.series[0].data;
+            var data1 = option.series[1].data;
+            var data2 = option.series[2].data;
+            var data3 = option.series[3].data;
+            axisData = (new Date()).toLocaleTimeString().replace(/^\D*/,'');
+            $.get("/api/sys/cpu",function (cpus) {
+                var sumSys=0;
+                var sumUser=0
+                var sumNice=0;
+                var sumWait=0
+                $.each(cpus,function (k,v) {
+                    sumSys=sumSys+v.sys;
+                    sumUser=sumUser+v.user;
+                    sumNice=sumNice+v.nice;
+                    sumWait=sumWait+v.wait;
+                    // var sysTemp =sys[k];
+                    // var userTemp=user[k];
+                    // var niceTemp=nice[k];
+                    // var waitTemp=wait[k];
+                    var sysTemp =[];
+                    var userTemp=[];
+                    var niceTemp=[];
+                    var waitTemp=[];
+                    for(var i=1;i<50;i++){
+                        sysTemp .push( sys[k][i])
+                        userTemp.push(user[k][i])
+                        niceTemp.push(nice[k][i])
+                        waitTemp.push(wait[k][i])
+                    }
+                    // sysTemp.shift();
+                    // userTemp.shift();
+                    // niceTemp.shift();
+                    // waitTemp.shift();
+                    sysTemp.push(v.sys*100);
+                    userTemp.push(v.user*100);
+                    niceTemp.push(v.nice*100);
+                    waitTemp.push(v.wait*100);
+                    sys[k]=sysTemp;
+                    user[k]=userTemp;
+                    wait[k]=waitTemp;
+                    nice[k]=niceTemp;
+                    subOption.series[0].data=sys[k];
+                    subOption.series[1].data=user[k];
+                    subOption.series[2].data=nice[k];
+                    subOption.series[3].data=wait[k];
+                    subOption.xAxis[0].data.shift();
+                    subOption.xAxis[0].data.push(axisData);
+                    cpu_echarts[k].setOption(subOption);
+                })
+                data0.shift();
+                data1.shift();
+                data2.shift();
+                data3.shift();
+                data0.push(sumSys/cpu_length*100);
+                data1.push(sumUser/cpu_length*100);
+                data2.push(sumNice/cpu_length*100);
+                data3.push(sumWait/cpu_length*100);
+            })
+
+
+            option.xAxis[0].data.shift();
+            option.xAxis[0].data.push(axisData);
+            var cpu=data1.slice(-1);
+            option.title.subtext="CPU使用率："+Math.floor(cpu)+"%";
+            myChart.setOption(option);
+        }, 1000);
+    })
+
+</script>
+
+<!-- jQuery -->
+<script src="../vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- FastClick -->
+<script src="../vendors/fastclick/lib/fastclick.js"></script>
+<!-- NProgress -->
+<script src="../vendors/nprogress/nprogress.js"></script>
+<!-- jQuery custom content scroller -->
+<script src="../vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+
+<!-- Custom Theme Scripts -->
+<script src="../build/js/custom.min.js"></script>

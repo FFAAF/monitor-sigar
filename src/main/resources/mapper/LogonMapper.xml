@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zy.monitor.dao.LogonMapper">
+    <resultMap id="BaseResultMap" type="com.zy.monitor.model.Logon" >
+        <result column="id" property="userId" />
+        <result column="password" property="password" />
+        <result column="level" property="level"/>
+    </resultMap>
+    <select id="findByUserId" resultMap="BaseResultMap">
+        select * from logon where id = #{userId} and password=#{password}
+    </select>
+</mapper>

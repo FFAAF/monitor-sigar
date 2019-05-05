@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Only for Test</title>
+</head>
+<section layout:fragment="content">
+    <div id="test" style="height: 100%"></div>
+        <div id="json"></div>
+
+</section>
+</html>
+
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+
+<script type="text/javascript">
+    // $.get("/api/sys/cpu",function (data) {
+    //     $("#json").append(JSON.stringify(data));
+    //     $.each(data,function (i,item) {
+    //         $("#test").append('cpu_'+i+' '+ item.combined+'</br>')
+    //     })
+    // })
+    // $.get("/api/sys/memory",function (result) {
+    //     $("#json").append(JSON.stringify(result));
+    //
+    //     $("#test").append('TotalMemory:'+result.total);
+    // })
+
+    $.get("/api/sys/fileSys",function (data) {
+        $("#json").append(JSON.stringify(data))
+    })
+</script>
+<!-- Bootstrap -->
+<script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- FastClick -->
+<script src="../vendors/fastclick/lib/fastclick.js"></script>
+<!-- NProgress -->
+<script src="../vendors/nprogress/nprogress.js"></script>
+<!-- jQuery custom content scroller -->
+<script src="../vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+
+<!-- Custom Theme Scripts -->
+<script src="../build/js/custom.min.js"></script>

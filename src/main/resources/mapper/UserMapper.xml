@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zy.monitor.dao.UserMapper">
+    <resultMap id="BaseResultMap" type="com.zy.monitor.model.User" >
+        <result column="id" property="userId" />
+        <result column="name" property="name" />
+        <result column="join_time" property="joinTime"></result>
+    </resultMap>
+    <select id="findByUserId" resultMap="BaseResultMap">
+        select * from user where userid = #{userid}
+    </select>
+    <select id="findAll" resultMap="BaseResultMap">
+        select * from user
+    </select>
+    <select id="findJoinLastWeek" resultMap="BaseResultMap">
+        select * from user where join_time > #{lastWeek}
+    </select>
+
+</mapper>

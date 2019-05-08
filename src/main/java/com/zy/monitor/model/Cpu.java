@@ -2,6 +2,8 @@ package com.zy.monitor.model;
 
 import org.hyperic.sigar.CpuPerc;
 
+import java.util.Date;
+
 public class Cpu {
     private double user;
     private double sys;

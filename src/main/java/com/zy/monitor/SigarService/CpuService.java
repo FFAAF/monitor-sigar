@@ -6,11 +6,13 @@ import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CpuService {
     private List<Cpu> cpus;
 
+    private Date date;
 
     public List<Cpu> getCpus() {
         return cpus;
@@ -26,5 +28,14 @@ public class CpuService {
         cpus = new ArrayList<>();
         for (CpuPerc cpuPerc : sigar.getCpuPercList())
             cpus.add(new Cpu(cpuPerc));
+        date=new Date();
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

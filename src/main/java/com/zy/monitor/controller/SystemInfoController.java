@@ -4,6 +4,7 @@ import com.zy.monitor.SigarService.CpuService;
 import com.zy.monitor.SigarService.FileSysService;
 import com.zy.monitor.SigarService.MemService;
 import com.zy.monitor.SigarService.ProcessService;
+import com.zy.monitor.job.CpuJob;
 import com.zy.monitor.model.Cpu;
 import com.zy.monitor.model.FileSys;
 import com.zy.monitor.model.Memory;
@@ -50,4 +51,8 @@ public class SystemInfoController {
         return ProcessService.getProcess(new Sigar());
     }
 
+    @RequestMapping("/cpuService")
+    public List<CpuService> getCpuService(){
+        return CpuJob.getCpuServices();
+    }
 }

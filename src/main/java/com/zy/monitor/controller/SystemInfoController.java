@@ -10,6 +10,7 @@ import com.zy.monitor.model.FileSys;
 import com.zy.monitor.model.Memory;
 import com.zy.monitor.model.ProcessInfo;
 import org.hyperic.sigar.*;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,8 +52,12 @@ public class SystemInfoController {
         return ProcessService.getProcess(new Sigar());
     }
 
-    @RequestMapping("/cpuService")
-    public List<CpuService> getCpuService(){
-        return CpuJob.getCpuServices();
+    @RequestMapping("/cpuService/{size}")
+    public List<CpuService> getCpuService(@PathVariable int size){
+        int length=CpuJob.getCpuServices().size();
+        if(length<size)
+            return CpuJob.getCpuServices();
+        return CpuJob.getCpuServices().subList(length-size,length);
+
     }
 }

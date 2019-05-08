@@ -3,6 +3,7 @@ package com.zy.monitor.model;
 import org.hyperic.sigar.Mem;
 
 public class Memory {
+
     private long total;
     private long used;
     private long free;

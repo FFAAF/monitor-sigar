@@ -5,6 +5,7 @@ import org.hyperic.sigar.CpuPerc;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,7 +13,8 @@ import java.util.List;
 public class CpuService {
     private List<Cpu> cpus;
 
-    private Date date;
+    private double combinedPer;
+    private Timestamp date;
 
     public List<Cpu> getCpus() {
         return cpus;
@@ -26,16 +28,29 @@ public class CpuService {
     }
     public CpuService(Sigar sigar) throws SigarException {
         cpus = new ArrayList<>();
-        for (CpuPerc cpuPerc : sigar.getCpuPercList())
+        combinedPer=0;
+        for (CpuPerc cpuPerc : sigar.getCpuPercList()){
             cpus.add(new Cpu(cpuPerc));
-        date=new Date();
+            combinedPer+=cpuPerc.getCombined();
+        }
+        combinedPer= combinedPer/cpus.size();
+        date=new Timestamp(System.currentTimeMillis());
+
     }
 
-    public Date getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(Timestamp date) {
         this.date = date;
+    }
+
+    public double getCombinedPer() {
+        return combinedPer;
+    }
+
+    public void setCombinedPer(double combinedPer) {
+        this.combinedPer = combinedPer;
     }
 }

@@ -1,10 +1,15 @@
 package com.zy.monitor.controller;
 
+import com.zy.monitor.alert.SimpleAlert;
 import com.zy.monitor.model.User;
 import com.zy.monitor.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -17,6 +22,8 @@ import java.util.List;
 public class MainController {
     @Resource
     private UserService userService;
+    @Autowired
+    private SimpleAlert simpleAlert;
 
     @RequestMapping("/")
     public String goIndex(HttpSession session, Model model){
@@ -56,6 +63,12 @@ public class MainController {
         return "test";
     }
 
+    @RequestMapping("/send")
+    @ResponseBody
+    public String sendMail(){
+        simpleAlert.sendMail();
+        return "send success";
+    }
 
     private boolean checkLogin(HttpSession session){
         if(session.isNew()||session.getAttribute("id")==null)

@@ -58,6 +58,10 @@ public class SystemInfoController {
         if(length<size)
             return CpuJob.getCpuServices();
         return CpuJob.getCpuServices()  .subList(length-size,length);
+    }
 
+    @RequestMapping("/cpuService")
+    public List<CpuService> getAllCpuService(){
+        return CpuJob.getCpuServices();
     }
 }

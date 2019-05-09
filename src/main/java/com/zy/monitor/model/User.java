@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 public class User {
     private String userId;
     private String name;
+    private String email;
     private Timestamp joinTime;
 
     public String getName() {
@@ -31,4 +32,15 @@ public class User {
         this.joinTime = joinTime;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

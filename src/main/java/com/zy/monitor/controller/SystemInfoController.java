@@ -57,7 +57,7 @@ public class SystemInfoController {
         int length=CpuJob.getCpuServices().size();
         if(length<size)
             return CpuJob.getCpuServices();
-        return CpuJob.getCpuServices().subList(length-size,length);
+        return CpuJob.getCpuServices()  .subList(length-size,length);
 
     }
 }

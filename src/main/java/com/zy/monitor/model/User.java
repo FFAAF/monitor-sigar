@@ -7,6 +7,7 @@ public class User {
     private String name;
     private String email;
     private Timestamp joinTime;
+    private int level;
 
     public String getName() {
         return name;
@@ -42,5 +43,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }

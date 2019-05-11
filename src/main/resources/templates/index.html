@@ -69,7 +69,8 @@
                 </div>
             </div>
         </div>
-
+    </div>
+    <div class="row">
         <div class="col-md-4 col-sm-4 col-xs-12">
             <div class="x_panel">
                 <div class="x_title">
@@ -93,6 +94,43 @@
                 </div>
                 <div class="x_content">
                     <div id="fileSys" style="height: 500px"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>进程信息</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">Settings 1</a>
+                                </li>
+                                <li><a href="#">Settings 2</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><a class="close-link"><i class="fa fa-close"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <table class="table table-row-cell">
+                        <thead>
+                        <td>pid</td>
+                        <td>进程</td>
+                        <td>用户名</td>
+                        <td>CPU占用</td>
+                        <td>内存占用</td>
+                        </thead>
+                        <tbody id="process">
+
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -279,6 +317,21 @@
         // $("#memUse").empty();
         // $("#memUse").append(memUsed.toFixed(1)+"/"+memTotal.toFixed(1)+"GB")
         myChart.setOption(option);
+
+        $.get("/api/sys/process",function (data) {
+            $("#process").empty();
+            $.each(data,function (i,proc) {
+                var path=proc.name.split('\\');
+                var name=path[path.length-1];
+                $("#process").append(
+                    "                       <tr> <td>"+proc.pid+"</td> \n" +
+                    "                        <td>"+name+"</td>\n" +
+                    "                        <td>"+proc.user+"</td>\n" +
+                    "                        <td>"+(proc.cpuPer*cpu/100).toFixed(1)+"%</td>\n" +
+                    "                        <td>"+(proc.memUse/1024/1024/8).toFixed(1)+"MB</td></tr>")
+            })
+        })
+
     }, 1000);
 
 
@@ -363,6 +416,20 @@
     };
     fileSysBar.setOption(file_option);
     })
+
+    $.get("/api/sys/process",function (data) {
+        $.each(data,function (i,proc) {
+            var path=proc.name.split();
+            var name=path[path.length-1];
+            $("#process").append(
+                "                       <tr> <td>"+proc.pid+"</td> \n" +
+                "                        <td>"+name+"</td>\n" +
+                "                        <td>"+proc.user+"</td>\n" +
+                "                        <td>"+proc.cpuPer+"%</td>\n" +
+                "                        <td>"+(proc.memUse/1024/1024).toFixed(1)+"MB</td></tr>")
+        })
+    })
+
 </script>
 
 

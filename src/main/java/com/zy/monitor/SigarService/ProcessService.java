@@ -1,45 +1,64 @@
 package com.zy.monitor.SigarService;
 
 import com.zy.monitor.model.ProcessInfo;
-import org.hyperic.sigar.ProcCpu;
-import org.hyperic.sigar.Sigar;
-import org.hyperic.sigar.SigarException;
+import org.hyperic.sigar.*;
+import org.hyperic.sigar.cmd.ProcInfo;
 import org.hyperic.sigar.cmd.Ps;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ProcessService {
 
-    public static List<ProcessInfo> getProcess(Sigar sigar){
+    public static List<ProcessInfo> getProcess(Sigar sigar) {
         List<ProcessInfo> processInfos = new ArrayList<>();
         Ps ps=new Ps();
         try {
             long[] pids = sigar.getProcList();
             for(long pid : pids){
-                List<String> list = ps.getInfo(sigar, pid);
                 ProcessInfo info = new ProcessInfo();
+                ProcCpu procCpu=new ProcCpu();
+
+                try {
+                    procCpu.gather(sigar, pid);
+                }catch (SigarPermissionDeniedException e){
+                    continue;
+                }
+                info.setPid(pid);
+                info.setCpuPer(procCpu .getTotal()*100/((procCpu .getLastTime()-procCpu .getStartTime())*1.0));
+//                info.setCpuPer(getCpuPercent(sigar,pid));
+                info.setMemUse(sigar.getProcMem(pid).getSize());
+                info.setDescription(ProcUtil.getDescription(sigar,pid));
+                List<String> list = ps.getInfo(sigar, pid);
                 for(int i = 0; i <= list.size(); i++){
                     switch(i){
-                        case 0 : info.setPid(list.get(0)); break;
                         case 1 : info.setUser(list.get(1)); break;
-                        case 2 : info.setStartTime(list.get(2)); break;
-                        case 3 : info.setMemSize(list.get(3)); break;
-                        case 4 : info.setMemUse(list.get(4)); break;
-                        case 5 : info.setMemhare(list.get(5)); break;
                         case 6 : info.setState(list.get(6)); break;
-                        case 7 : info.setCpuTime(list.get(7)); break;
                         case 8 : info.setName(list.get(8)); break;
                     }
                 }
-                ProcCpu procCpu;
                 processInfos.add(info);
             }
         } catch (SigarException e) {
             e.printStackTrace();
         }
-
-        return processInfos;
+        processInfos.sort(Comparator.comparingDouble(ProcessInfo::getCpuPer).reversed());
+        return processInfos.subList(0,10);
     }
 
+
+    private static double getCpuPercent(Sigar sigar,long pid) throws SigarException{
+        long cpubegin=sigar.getCpu().getTotal();
+        long proBegin=sigar.getProcCpu(pid).getTotal();
+        try{
+            Thread.sleep(100);
+        }catch (InterruptedException e){
+            e.printStackTrace();
+        }
+        long cpuEnd=sigar.getCpu().getTotal();
+        long proEnd=sigar.getProcCpu(pid).getTotal();
+        double cpuPer=(proEnd-proBegin)/(cpuEnd-cpubegin);
+        return cpuPer;
+    }
 }

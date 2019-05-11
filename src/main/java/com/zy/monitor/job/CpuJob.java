@@ -18,7 +18,7 @@ import java.util.List;
 public class CpuJob {
     private static List<CpuService> cpuServices =new LinkedList<>();
     private static List<MemService> memServices=new LinkedList<>();
-    private static double alertCpuPer=0.2;
+    private static double alertCpuPer=0.9;
     private static double alertMemPer=0.8;
     private static int size=10000;
     private Sigar sigar=new Sigar();

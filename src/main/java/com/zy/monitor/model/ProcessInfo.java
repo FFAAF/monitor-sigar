@@ -1,29 +1,24 @@
 package com.zy.monitor.model;
 
 public class ProcessInfo {
-    private String pid;
+    private long pid;
 
     private String user;
 
-    private String startTime;
+    private double cpuPer;
 
-    private String memSize;
-
-    private String memUse;
-
-    private String memhare;
+    private long memUse;
 
     private String state;
 
-    private String cpuTime;
-
     private String name;
+    private String description;
 
-    public String getPid() {
+    public long getPid() {
         return pid;
     }
 
-    public void setPid(String pid) {
+    public void setPid(long pid) {
         this.pid = pid;
     }
 
@@ -35,36 +30,12 @@ public class ProcessInfo {
         this.user = user;
     }
 
-    public String getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-
-    public String getMemSize() {
-        return memSize;
-    }
-
-    public void setMemSize(String memSize) {
-        this.memSize = memSize;
-    }
-
-    public String getMemUse() {
+    public long getMemUse() {
         return memUse;
     }
 
-    public void setMemUse(String memUse) {
+    public void setMemUse(long memUse) {
         this.memUse = memUse;
-    }
-
-    public String getMemhare() {
-        return memhare;
-    }
-
-    public void setMemhare(String memhare) {
-        this.memhare = memhare;
     }
 
     public String getState() {
@@ -75,14 +46,6 @@ public class ProcessInfo {
         this.state = state;
     }
 
-    public String getCpuTime() {
-        return cpuTime;
-    }
-
-    public void setCpuTime(String cpuTime) {
-        this.cpuTime = cpuTime;
-    }
-
     public String getName() {
         return name;
     }
@@ -91,4 +54,19 @@ public class ProcessInfo {
         this.name = name;
     }
 
+    public double getCpuPer() {
+        return cpuPer;
+    }
+
+    public void setCpuPer(double cpuPer) {
+        this.cpuPer = cpuPer;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

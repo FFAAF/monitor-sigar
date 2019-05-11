@@ -48,7 +48,8 @@ public class SystemInfoController {
     }
 
     @RequestMapping("/process")
-    public List<ProcessInfo> getProcessInfo(){
+    public List<ProcessInfo> getProcessInfo()throws SigarException{
+
         return ProcessService.getProcess(new Sigar());
     }
 

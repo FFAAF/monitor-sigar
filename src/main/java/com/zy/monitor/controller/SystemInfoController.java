@@ -65,4 +65,15 @@ public class SystemInfoController {
     public List<CpuService> getAllCpuService(){
         return CpuJob.getCpuServices();
     }
+    @RequestMapping("/memService")
+    public List<MemService> getAllMemService(){
+        return CpuJob.getMemServices();
+    }
+    @RequestMapping("/memService/{size}")
+    public List<MemService> getMemService(@PathVariable int size){
+        int length=CpuJob.getMemServices().size();
+        if(length<size)
+            return CpuJob.getMemServices();
+        return CpuJob.getMemServices()  .subList(length-size,length);
+    }
 }

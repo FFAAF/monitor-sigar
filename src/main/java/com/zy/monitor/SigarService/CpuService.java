@@ -6,6 +6,8 @@ import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +36,7 @@ public class CpuService {
             combinedPer+=cpuPerc.getCombined();
         }
         combinedPer= combinedPer/cpus.size();
+
         date=new Timestamp(System.currentTimeMillis());
 
     }

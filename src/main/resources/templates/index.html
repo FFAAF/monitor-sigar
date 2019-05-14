@@ -53,9 +53,10 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">Settings 1</a>
+                                <li><a id="curr">当前数据</a></li>
+                                <li><a id="one">近一小时数据</a>
                                 </li>
-                                <li><a href="#">Settings 2</a>
+                                <li><a id="three">近三小时数据</a>
                                 </li>
                             </ul>
                         </li>
@@ -153,6 +154,7 @@
     var myChart = echarts.init(dom);
     var app=[];
     var totalMem=0;
+    var refresh=true;
     $.get("/api/sys/memory",function (mem) {
         totalMem=mem.total;
     })
@@ -185,9 +187,7 @@
             }
         },
         dataZoom: {
-            show: false,
-            start: 0,
-            end: 100
+            show: false
         },
         xAxis: [
             {
@@ -204,21 +204,10 @@
                     return res;
                 })()
             }
-            // {
-            //     type: 'category',
-            //     boundaryGap: true,
-            //     data: (function (){
-            //         var res = [];
-            //         var len = 100;
-            //         while (len--) {
-            //             res.push(10 - len - 1);
-            //         }
-            //         return res;
-            //     })()
-            // }
         ],
         yAxis: [
             {
+                name:"百分比",
                 type: 'value',
                 scale: true,
                 max: 100,
@@ -279,44 +268,37 @@
                 sum=sum+v.combined;
             })
             ave= sum/cpus.length*100
-            data1.shift();
-            data1.push(ave);
+            if(refresh){
+                data1.shift();
+                data1.push(ave);
+            }
+
             $("#cpuPer").empty();
             $("#cpuPer").append(Math.floor(ave)+"%");
 
         })
 
         $.get("/api/sys/memory",function (mem) {
-            data0.shift();
-            data0.push(mem.usedPercent)
+            if(refresh){
+                data0.shift();
+                data0.push(mem.usedPercent)
+            }
+
             memTotal=mem.total/(1024*1024*1024);
             memUsed=mem.used/(1024*1024*1024);
-
             $("#memPer").empty();
             $("#memPer").append(Math.floor(mem.usedPercent)+"%");
             $("#memUse").empty();
             $("#memUse").append("已使用："+memUsed.toFixed(1)+"/"+memTotal.toFixed(1)+"GB")
         })
 
-
-        // data0.shift();
-        // data0.push(Math.round(Math.random() * 1000));
-        // data1.shift();
-        // // data1.push((Math.random() * 10 + 5).toFixed(1) - 0);
-        // data1.push(cpuAve);
         option.xAxis[0].data.shift();
         option.xAxis[0].data.push(axisData);
-        // option.xAxis[1].data.shift();
-        // option.xAxis[1].data.push(app.count++);
+
         var cpu=data1.slice(-1);
         var memory=data0.slice(-1);
-        // $("#cpuPer").empty();
-        // $("#cpuPer").append(Math.floor(cpu)+"%");
-        // $("#memPer").empty();
-        // $("#memPer").append(Math.floor(memory)+"%");
-        // $("#memUse").empty();
-        // $("#memUse").append(memUsed.toFixed(1)+"/"+memTotal.toFixed(1)+"GB")
-        myChart.setOption(option);
+        if(refresh)
+            myChart.setOption(option);
 
         $.get("/api/sys/process",function (data) {
             $("#process").empty();
@@ -429,6 +411,128 @@
                 "                        <td>"+(proc.memUse/1024/1024).toFixed(1)+"MB</td></tr>")
         })
     })
+
+
+
+    var cpu=[];
+    var time=[];
+    var mem=[];
+     history_option = {
+        title: {
+            text: '性能数据',
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                label: {
+                    backgroundColor: '#283b56'
+                }
+            }
+        },
+        legend: {
+            data:['CPU使用率', '内存占用']
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                dataView: {readOnly: false},
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        dataZoom: {
+            show: true
+        },
+        xAxis: [
+            {
+                type: 'category',
+                boundaryGap: true,
+                data:time
+            }
+        ],
+        yAxis: [
+            {
+                name:"百分比",
+                type: 'value',
+                scale: true,
+                max: 100,
+                min: 0,
+                boundaryGap: [0.2, 0.2]
+            },
+        ],
+        series: [
+            {
+                name:'内存占用',
+                type:'line',
+                symbol:"none",
+                data:mem
+
+            },
+            {
+                name:'CPU使用率',
+                type:'line',
+                symbol:"none",
+                smooth:true,
+                data:cpu,
+                areaStyle:{
+                    normal:{
+
+                    }
+                }
+            }
+        ]
+    };
+
+    var state="curr";
+    $("#curr").click(function () {
+        if(state!="curr")
+            location.reload();
+    })
+    $("#one").click(function () {
+        myChart.clear();
+        refresh=false;
+        if(state!="one")
+            state="one";
+        resetChart(3600);
+    })
+    $("#three").click(function () {
+        myChart.clear();
+        refresh=false;
+        if(state!="three")
+            state="three";
+        resetChart(9600);
+    })
+
+function resetChart(count){
+    var cpuUrl="/api/sys/cpuService/"+count;
+    var memUrl="/api/sys/memService/"+count;
+    $.ajax({
+        url:cpuUrl,
+        type:"get",
+        async:false,
+        success:function (data) {
+            $.each(data,function (i,item) {
+                cpu[i]=item.combinedPer*100;
+                time[i]=new Date(item.date).toLocaleTimeString();
+            })
+        }
+    })
+    $.ajax({
+        url:memUrl,
+        type:"get",
+        async:false,
+        success:function (data) {
+            $.each(data,function (i,item) {
+                mem[i]=item.memory.usedPercent;
+            })
+        }
+    })
+    myChart.setOption(history_option);
+}
+
+
+
 
 </script>
 

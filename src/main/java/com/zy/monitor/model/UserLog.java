@@ -6,6 +6,7 @@ public class UserLog {
     private String id;
     private Timestamp logIn;
     private String ip;
+    private String type;
 
     public String getId() {
         return id;
@@ -29,5 +30,13 @@ public class UserLog {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -2,9 +2,12 @@ package com.zy.monitor.job;
 
 import com.zy.monitor.SigarService.CpuService;
 import com.zy.monitor.SigarService.MemService;
+import com.zy.monitor.SigarService.ProcessService;
 import com.zy.monitor.alert.SimpleAlert;
-import com.zy.monitor.model.Cpu;
-import com.zy.monitor.model.Memory;
+import com.zy.monitor.model.*;
+import com.zy.monitor.service.AlertCpuService;
+import com.zy.monitor.service.AlertProcessService;
+import com.zy.monitor.service.AlertService;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
 @Component
@@ -22,6 +26,12 @@ public class CpuJob {
     private static double alertMemPer=1.3;
     private static int size=10000;
     private Sigar sigar=new Sigar();
+    @Resource
+    private AlertService alertService;
+    @Resource
+    private AlertCpuService alertCpuService;
+    @Resource
+    private AlertProcessService alertProcessService;
     @Autowired
     private SimpleAlert simpleAlert;
     @Scheduled(fixedRate = 1000)
@@ -33,11 +43,30 @@ public class CpuJob {
         CpuService cpuService=new CpuService(sigar);
         MemService memService=new MemService(sigar);
 
-        if(cpuService.getCombinedPer()>alertCpuPer&&simpleAlert.getDelay()==0)
+        if(cpuService.getCombinedPer()>alertCpuPer&&simpleAlert.getDelay()==0){
+
             simpleAlert.sendMail();
+            Alert alert=new Alert(cpuService,memService, ProcessService.getProcess(sigar));
+            alertService.addOne(alert);
+            int alertId=alertService.getLastId();
+            AlertCpu cpu=alert.getCpu();
+            cpu.setAlertId(alertId);
+            alertCpuService.addOne(cpu);
+            for(AlertProcess process:alert.getProcesses()){
+                process.setAlertId(alertId);
+                alertProcessService.addOne(process);
+            }
+
+        }
+
         cpuServices.add(cpuService);
         memServices.add(memService);
 
+
+    }
+
+
+    public static void insertDB(Alert alert){
 
     }
 

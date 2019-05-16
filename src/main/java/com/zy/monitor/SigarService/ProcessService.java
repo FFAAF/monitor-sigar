@@ -38,6 +38,8 @@ public class ProcessService {
                         case 8 : info.setName(list.get(8)); break;
                     }
                 }
+                String name=info.getName();
+                info.setName(name.substring(name.lastIndexOf("\\")+1));
                 processInfos.add(info);
             }
         } catch (SigarException e) {

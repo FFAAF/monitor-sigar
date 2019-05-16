@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zy.monitor.dao.AlertMapper">
+    <resultMap id="BaseResultMap" type="com.zy.monitor.model.Alert" >
+        <result column="alertId" property="alertId" />
+        <result column="alertTime" property="alertTime" />
+        <result column="memUse" property="memUse"/>
+        <association property="cpu" javaType="com.zy.monitor.model.AlertCpu" >
+            <id property="cpuId" column="cpu_id" />
+            <result column="combined" property="combined"/>
+            <result column="user" property="user"/>
+            <result column="sys" property="sys"/>
+            <result column="wait" property="wait"/>
+            <result column="nice" property="nice"/>
+        </association>
+        <collection property="processes" ofType="com.zy.monitor.model.AlertProcess">
+            <id column="id" property="id"/>
+            <result column="pid" property="pid"/>
+            <result column="name" property="name"/>
+            <result column="cpu" property="cpu"/>
+            <result column="mem" property="mem"/>
+        </collection>
+    </resultMap>
+    <select id="findAll" resultMap="BaseResultMap">
+        select a.alertId,a.alertTime,a.memUse,c.cpu_id,c.combined,c.user,c.sys,c.wait,c.nice,p.id,p.pid,p.name,p.cpu,p.mem
+        from alert a left join cpuinfo c on a.alertId=c.alertId
+                     left join process p on a.alertId=p.alertId
+        group by a.alertId
+    </select>
+    <select id="selectLastId" resultType="int">
+		 select LAST_INSERT_ID()
+	</select>
+    <insert id="addOne" parameterType="com.zy.monitor.model.Alert" keyProperty="alertId" keyColumn="alertId" useGeneratedKeys="true">
+        insert into alert(alertTime,memUse) values (#{alertTime},#{memUse})
+    </insert>
+</mapper>

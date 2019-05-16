@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zy.monitor.dao.AlertCpuMapper">
+    <insert id="addOne" parameterType="com.zy.monitor.model.AlertCpu">
+        insert cpuinfo(alertId,combined,user,sys,nice,wait) values (#{alertId},#{combined},#{user},${sys},#{nice},${wait})
+    </insert>
+</mapper>

@@ -9,6 +9,7 @@ import com.zy.monitor.model.Cpu;
 import com.zy.monitor.model.FileSys;
 import com.zy.monitor.model.Memory;
 import com.zy.monitor.model.ProcessInfo;
+import org.hibernate.validator.constraints.pl.REGON;
 import org.hyperic.sigar.*;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,9 +49,12 @@ public class SystemInfoController {
     }
 
     @RequestMapping("/process")
-    public List<ProcessInfo> getProcessInfo()throws SigarException{
-
+    public List<ProcessInfo> getAllProcessInfo(){
         return ProcessService.getProcess(new Sigar());
+    }
+    @RequestMapping("/process/{len}")
+    public List<ProcessInfo> getProcessInfo(@PathVariable int len){
+        return ProcessService.getProcess(new Sigar()).subList(0,len);
     }
 
     @RequestMapping("/cpuService/{size}")

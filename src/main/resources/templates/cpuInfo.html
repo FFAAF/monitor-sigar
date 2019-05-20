@@ -8,7 +8,7 @@
 </head>
 <section layout:fragment="content">
     <div class="row">
-        <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="collg-8 col-md-8 col-sm-8 col-xs-12">
             <div id="main" style="height: 600px" ></div>
         </div>
         <div  class="col-md-4 col-sm-4">
@@ -63,29 +63,36 @@
         for(i=0;i<50;i++){
             dd.push(0);
         }
-        for(var i=0;i<8;i++){
-            $("#list").append('        <div class="col-md-4 col-sm-4 col-xs-6">\n' +
-                '            <div class="x_panel">\n' +
-                '                <div class="x_title">\n' +
-                '                    <h2>CPU_'+i+'</h2>\n' +
-                '                    <ul class="nav navbar-right panel_toolbox">\n' +
-                '                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>\n' +
-                '                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>\n' +
-                '                    </ul>\n' +
-                '                    <div class="clearfix"></div>\n' +
-                '                </div>\n' +
-                '                <div class="x_content">\n' +
-                '                    <div id="CPU_'+ i +'" style="height: 400px"></div>\n' +
-                '                </div>\n' +
-                '            </div>\n' +
-                '        </div>')
-            cpu_echarts[i]=echarts.init(document.getElementById("CPU_"+i));
-            sys[i]=dd;
-            user[i]=dd;
-            wait[i]=dd;
-            nice[i]=dd;
-        }
-
+        $.ajax({
+            url:"api/sys/cpu",
+            async:false,
+            success:function (data) {
+                cpu_length=data.length;
+                for(var i=0;i<cpu_length;i++){
+                    $("#list").append('        <div class="col-md-4 col-sm-4 col-xs-6">\n' +
+                        '            <div class="x_panel">\n' +
+                        '                <div class="x_title">\n' +
+                        '                    <h2>CPU_'+i+'</h2>\n' +
+                        '                    <ul class="nav navbar-right panel_toolbox">\n' +
+                        '                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>\n' +
+                        '                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>\n' +
+                        '                    </ul>\n' +
+                        '                    <div class="clearfix"></div>\n' +
+                        '                </div>\n' +
+                        '                <div class="x_content">\n' +
+                        '                    <div id="CPU_'+ i +'" style="height: 400px"></div>\n' +
+                        '                </div>\n' +
+                        '            </div>\n' +
+                        '        </div>')
+                    cpu_echarts[i]=echarts.init(document.getElementById("CPU_"+i));
+                    sys[i]=dd;
+                    user[i]=dd;
+                    wait[i]=dd;
+                    nice[i]=dd;
+                }
+                
+            }
+        })
         $.get("/api/sys/cpuInfo",function (data) {
             $("#cpu_info").append("<h3>Cpu品牌："+data[0].vendor+"</br>"+'Cpu型号：'+data[0].model+"</br>"+"内核数："+data[0].totalCores+"</h3>")
         })

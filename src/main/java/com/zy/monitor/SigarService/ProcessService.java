@@ -46,7 +46,7 @@ public class ProcessService {
             e.printStackTrace();
         }
         processInfos.sort(Comparator.comparingDouble(ProcessInfo::getCpuPer).reversed());
-        return processInfos.subList(0,10);
+        return processInfos;
     }
 
 

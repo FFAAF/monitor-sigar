@@ -1,4 +1,4 @@
-package com.zy.monitor.model;
+package com.zy.monitor.example;
 
 import org.hyperic.sigar.*;
 import org.slf4j.Logger;

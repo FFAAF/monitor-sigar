@@ -1,4 +1,4 @@
-package com.zy.monitor.model;
+package com.zy.monitor.example;
 
 import java.lang.management.ManagementFactory;
 import com.sun.management.OperatingSystemMXBean;

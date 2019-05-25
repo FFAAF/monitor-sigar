@@ -19,10 +19,6 @@ public class AlertServiceImpl implements AlertService {
         return alertMapper.findAll();
     }
 
-    @Override
-    public int getLastId() {
-        return alertMapper.getLastId();
-    }
 
     @Override
     public void addOne(Alert alert) {

@@ -10,6 +10,26 @@
     <div id="test" style="height: 100%"></div>
         <div id="json"></div>
 
+    <th:forEach items="${users}" var="user">
+        <tr>
+            <td id="">${user.createTime}</td>
+            <td id="userName">${user.userName}</td>
+            <td id="">${user.role}</td>
+            <td id="">${user.phone}</td>
+            <td id="">${user.groupId}</td>
+            <td id="">${user.groupRole}</td>
+            <td id="">${user.lastUpdate}</td>
+            <td>
+                <button id="edit" class="layui-btn layui-btn-small">
+                    <i class="layui-icon">&#xe642;</i>
+                </button>
+                <button id="delete" class="layui-btn layui-btn-small">
+                    <i class="layui-icon">&#xe640;</i>
+                </button>
+            </td>
+        </tr>
+    </th:forEach>
+
 </section>
 </html>
 
@@ -31,6 +51,19 @@
     // $.get("/api/sys/fileSys",function (data) {
     //     $("#json").append(JSON.stringify(data))
     // })
+    $.get("/api/sys/process",function (data) {
+        var users=data;
+    })
+
+    $('#delete').on('click', function() {
+        //第一种方式按照index进行值的获取，个人不推荐
+        //var userName = $(this).parents("tr").children("td:nth-child(2)").text();
+        //第二种方式按照id获取值,推荐
+        var userName = $(this).parents("tr").find("#userName").text();
+        alert(userName);
+        //第三种方式按照class获取值
+        //var userName = $(this).parents("tr").find(".userName").text();
+    });
     $("#json").append(new Date())
 </script>
 <!-- Bootstrap -->

@@ -1,5 +1,6 @@
 package com.zy.monitor.controller;
 
+import com.zy.monitor.ProcControlService.ProcControl;
 import com.zy.monitor.SigarService.CpuService;
 import com.zy.monitor.SigarService.FileSysService;
 import com.zy.monitor.SigarService.MemService;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,9 +51,29 @@ public class SystemInfoController {
     }
 
     @RequestMapping("/process")
-    public List<ProcessInfo> getProcessInfo()throws SigarException{
+    public List<ProcessInfo> getAllProcessInfo()throws SigarException{
 
         return ProcessService.getProcess(new Sigar());
+    }
+    @RequestMapping("/process/{size}")
+    public List<ProcessInfo> getProcessInfo(@PathVariable int size)throws SigarException{
+
+        return ProcessService.getProcess(new Sigar()).subList(0,size);
+    }
+
+    @RequestMapping("/kill/{pid}")
+    public List<String> killProcess(@PathVariable long pid) throws Exception {
+        return ProcControl.procKill(pid);
+    }
+
+    @RequestMapping("/suspend/{pid}")
+    public List<String> suspendProcess(@PathVariable long pid) throws Exception {
+        return ProcControl.procSuspend(pid);
+    }
+
+    @RequestMapping("/resume/{pid}")
+    public List<String> resumeProcess(@PathVariable long pid) throws Exception {
+        return ProcControl.procResume(pid);
     }
 
     @RequestMapping("/cpuService/{size}")
@@ -58,7 +81,7 @@ public class SystemInfoController {
         int length=CpuJob.getCpuServices().size();
         if(length<size)
             return CpuJob.getCpuServices();
-        return CpuJob.getCpuServices()  .subList(length-size,length);
+        return CpuJob.getCpuServices() .subList(length-size,length);
     }
 
     @RequestMapping("/cpuService")

@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface AlertService {
     List<Alert> getAll();
-    int getLastId();
     void addOne(Alert alert);
 }

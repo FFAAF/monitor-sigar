@@ -70,6 +70,11 @@ public class MainController {
         return "send success";
     }
 
+    @RequestMapping("processList")
+    public String goProList(){
+        return "processList";
+    }
+
     private boolean checkLogin(HttpSession session){
         if(session.isNew()||session.getAttribute("id")==null)
             return false;

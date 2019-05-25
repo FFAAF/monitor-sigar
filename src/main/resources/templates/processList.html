@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="layout">
+<head>
+    <meta charset="UTF-8">
+    <title>进程信息</title>
+</head>
+<section layout:fragment="content">
+    <div class="row">
+        <div class="col-md-12 col-lg-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>进程信息</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        </li>
+                        <li><a class="close-link"><i class="fa fa-close"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                        <table class="table table-row-cell">
+                            <thead>
+                            <td>pid</td>
+                            <td>进程</td>
+                            <td>用户名</td>
+                            <td>CPU占用</td>
+                            <td>内存占用</td>
+                            <td>操作</td>
+                            </thead>
+                            <tbody id="process">
+                            </tbody>
+                        </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+</html>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+
+
+    setInterval(function () {
+
+        $.ajax({
+            url: "/api/sys/process",
+            type: "get",
+            async: false,
+            success: function (data) {
+                $("#process").empty();
+                $.each(data, function (i, proc) {
+                    var path = proc.name.split('\\');
+                    var name = path[path.length - 1];
+                    $("#process").append(
+                        "                       <tr> <td id='pid'>" + proc.pid + "</td> \n" +
+                        "                        <td>" + name + "</td>\n" +
+                        "                        <td>" + proc.user + "</td>\n" +
+                        "                        <td>" + (proc.cpuPer).toFixed(1) + "%</td>\n" +
+                        "                        <td>" + (proc.memUse / 1024 / 1024 / 8).toFixed(1) + "MB</td>" +
+                        "                        <td><button class='btn-danger' id='kill'>终止</button>" +
+                        "                        <td><button class='btn-warning' id='suspend'>挂起</button>" +
+                        "                        <td><button class='btn-success' id='resume'>恢复</button>" +
+                        "</td></tr>  "
+                    )
+                })
+            }
+        }, 1000)
+
+        $("td button").click(function () {
+            var type=this.id;
+            var pid = $(this).parents("tr").find("#pid").text();
+            $.ajax({
+                url:"/api/sys/"+type+"/"+pid,
+                type:"get",
+                async:"false",
+                success:function (msg) {
+                    alert(msg)
+                }
+            })
+        })
+    })
+</script>
+
+
+
+
+
+
+<!-- jQuery -->
+<script src="../vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- FastClick -->
+<script src="../vendors/fastclick/lib/fastclick.js"></script>
+<!-- NProgress -->
+<script src="../vendors/nprogress/nprogress.js"></script>
+<!-- jQuery custom content scroller -->
+<script src="../vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+
+<!-- Custom Theme Scripts -->
+<script src="../build/js/custom.min.js"></script>

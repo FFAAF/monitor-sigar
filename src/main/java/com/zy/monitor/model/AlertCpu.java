@@ -1,5 +1,7 @@
 package com.zy.monitor.model;
 
+import com.zy.monitor.SigarService.CpuService;
+
 public class AlertCpu {
     private int cpuId;
     private int alertId;
@@ -8,6 +10,16 @@ public class AlertCpu {
     private double sys;
     private double nice;
     private double wait;
+
+    public AlertCpu(){}
+
+    public AlertCpu(CpuService cpuService){
+        this.setCombined(cpuService.getCombinedPer());
+        this.setUser(cpuService.getUser());
+        this.setNice(cpuService.getNice());
+        this.setSys(cpuService.getSys());
+        this.setWait(cpuService.getWait());
+    }
 
     public int getAlertId() {
         return alertId;

@@ -1,4 +1,4 @@
-package com.zy.monitor.model;
+package com.zy.monitor.example;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

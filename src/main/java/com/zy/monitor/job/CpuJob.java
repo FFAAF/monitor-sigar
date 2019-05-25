@@ -22,8 +22,8 @@ import java.util.List;
 public class CpuJob {
     private static List<CpuService> cpuServices =new LinkedList<>();
     private static List<MemService> memServices=new LinkedList<>();
-    private static double alertCpuPer=1.2;
-    private static double alertMemPer=1.3;
+    private static double alertCpuPer=0.8;
+    private static double alertMemPer=0.9;
     private static int size=10000;
     private Sigar sigar=new Sigar();
     @Resource
@@ -48,7 +48,7 @@ public class CpuJob {
             simpleAlert.sendMail();
             Alert alert=new Alert(cpuService,memService, ProcessService.getProcess(sigar));
             alertService.addOne(alert);
-            int alertId=alertService.getLastId();
+            int alertId= alert.getAlertId();
             AlertCpu cpu=alert.getCpu();
             cpu.setAlertId(alertId);
             alertCpuService.addOne(cpu);

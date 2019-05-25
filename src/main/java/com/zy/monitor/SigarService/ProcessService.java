@@ -25,6 +25,7 @@ public class ProcessService {
                 }catch (SigarPermissionDeniedException e){
                     continue;
                 }
+                ProcState state=sigar.getProcState(pid);
                 info.setPid(pid);
                 info.setCpuPer(procCpu .getTotal()*100/((procCpu .getLastTime()-procCpu .getStartTime())*1.0));
 //                info.setCpuPer(getCpuPercent(sigar,pid));
@@ -46,7 +47,7 @@ public class ProcessService {
             e.printStackTrace();
         }
         processInfos.sort(Comparator.comparingDouble(ProcessInfo::getCpuPer).reversed());
-        return processInfos.subList(0,10);
+        return processInfos;
     }
 
 

@@ -20,7 +20,7 @@ public class Alert {
     public Alert(CpuService cpuService, MemService memService,List<ProcessInfo> processInfos){
         this.setAlertTime(cpuService.getDate());
         this.setMemUse(memService.getMemory().getUsedPercent());
-        this.setCpu(new AlertCpu());
+        this.setCpu(new AlertCpu(cpuService));
         processes=new LinkedList<>();
         for(ProcessInfo info:processInfos){
             processes.add(new AlertProcess(info));

@@ -399,7 +399,7 @@
     fileSysBar.setOption(file_option);
     })
 
-    $.get("/api/sys/process",function (data) {
+    $.get("/api/sys/process/10",function (data) {
         $.each(data,function (i,proc) {
             var path=proc.name.split();
             var name=path[path.length-1];

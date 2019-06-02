@@ -13,4 +13,5 @@ public interface UserLogMapper {
     List<UserLog> getAll();
     List<UserLog> getById(String id);
     List<UserLog> getBetweenDate(Timestamp from,Timestamp to);
+    void addOne(UserLog userLog);
 }

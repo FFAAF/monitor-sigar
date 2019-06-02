@@ -27,7 +27,7 @@
         select a.alertId,a.alertTime,a.memUse,c.cpu_id,c.combined,c.user,c.sys,c.wait,c.nice,p.id,p.pid,p.name,p.cpu,p.mem
         from alert a left join cpuinfo c on a.alertId=c.alertId
                      left join process p on a.alertId=p.alertId
-        group by a.alertId
+
     </select>
     <select id="selectLastId" resultType="int">
 		 select LAST_INSERT_ID()

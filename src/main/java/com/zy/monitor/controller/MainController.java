@@ -57,6 +57,15 @@ public class MainController {
         return "userList";
     }
 
+    @RequestMapping("/addUser")
+    public String addUser(){
+        return "addUser";
+    }
+
+    @RequestMapping("/userLog")
+    public String goLogList(){
+        return "userLog";
+    }
 
     @RequestMapping("/test")
     public String goTest(){
@@ -73,6 +82,11 @@ public class MainController {
     @RequestMapping("processList")
     public String goProList(){
         return "processList";
+    }
+
+    @RequestMapping("/alertList")
+    public String goAlertList(){
+        return "alertList";
     }
 
     private boolean checkLogin(HttpSession session){

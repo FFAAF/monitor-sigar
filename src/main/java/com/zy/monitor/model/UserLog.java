@@ -3,17 +3,24 @@ package com.zy.monitor.model;
 import java.sql.Timestamp;
 
 public class UserLog {
-    private String id;
+    private int id;
+    private String userId;
     private Timestamp logIn;
     private String ip;
-    private String type;
-
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public Timestamp getLogIn() {
@@ -32,11 +39,4 @@ public class UserLog {
         this.ip = ip;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }

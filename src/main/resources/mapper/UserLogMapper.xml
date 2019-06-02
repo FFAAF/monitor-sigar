@@ -17,4 +17,8 @@
     <select id="getBetweenDate" resultMap="BaseResultMap">
         select * from user_log where log_in between ${from } and  ${to }
     </select>
+
+    <insert id="addOne" parameterType="com.zy.monitor.model.UserLog" keyProperty="id" keyColumn="id" useGeneratedKeys="true">
+        insert into user_log(userId,ip_address) values (#{userId},#{ip})
+    </insert>
 </mapper>

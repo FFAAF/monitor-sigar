@@ -57,6 +57,7 @@
 
     setInterval(function () {
 
+
         $.ajax({
             url: "/api/sys/process",
             type: "get",
@@ -68,7 +69,7 @@
                     var name = path[path.length - 1];
                     $("#process").append(
                         "                       <tr> <td id='pid'>" + proc.pid + "</td> \n" +
-                        "                        <td>" + name + "</td>\n" +
+                        "                        <td id='name'>" + name + "</td>\n" +
                         "                        <td>" + proc.user + "</td>\n" +
                         "                        <td>" + (proc.cpuPer).toFixed(1) + "%</td>\n" +
                         "                        <td>" + (proc.memUse / 1024 / 1024 / 8).toFixed(1) + "MB</td>" +
@@ -79,21 +80,24 @@
                     )
                 })
             }
-        }, 1000)
-
+        });
         $("td button").click(function () {
             var type=this.id;
             var pid = $(this).parents("tr").find("#pid").text();
-            $.ajax({
-                url:"/api/sys/"+type+"/"+pid,
-                type:"get",
-                async:"false",
-                success:function (msg) {
-                    alert(msg)
-                }
-            })
+            var name= $(this).parents("tr").find("#name").text();
+            if(confirm("确认要对进程"+name+"进行"+type+"操作吗？")){
+                $.ajax({
+                    url:"/api/sys/"+type+"/"+pid,
+                    type:"get",
+                    async:"false",
+                    success:function (msg) {
+                        alert(msg)
+                    }
+                })
+            }
         })
-    })
+    },1000)
+
 </script>
 
 

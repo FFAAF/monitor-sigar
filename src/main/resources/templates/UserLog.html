@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="layout">
+<head>
+    <meta charset="UTF-8">
+    <title>用户日志</title>
+</head>
+
+<section layout:fragment="content">
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12" >
+            <table class="table table-striped projects">
+                <thead>
+                <th style="width: 20%">Id</th>
+                <th>用户名</th>
+                <th>登录时间</th>
+                <th>ip地址</th>
+                </thead>
+                <tbody id="log">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</html>
+
+
+
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+    $.ajax({
+        url:"/api/user/logs",
+        type:"get",
+        async:false,
+        success:function (users) {
+            $.each(users,function (i,user) {
+                $("#log").append("          <tr>" +
+                    "                        <td>"+user.id+"</td> \n" +
+                    "                        <td>"+user.userId+"</td> \n" +
+                    "                        <td>"+new Date(user.logIn).toLocaleString()+"</td>\n" +
+                    "                        <td>"+user.ip+"</td></tr>")
+            })
+        }
+    });
+</script>
+
+
+
+
+<!-- jQuery -->
+<script src="../vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- FastClick -->
+<script src="../vendors/fastclick/lib/fastclick.js"></script>
+<!-- NProgress -->
+<script src="../vendors/nprogress/nprogress.js"></script>
+<!-- jQuery custom content scroller -->
+<script src="../vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+
+<!-- Custom Theme Scripts -->
+<script src="../build/js/custom.min.js"></script>

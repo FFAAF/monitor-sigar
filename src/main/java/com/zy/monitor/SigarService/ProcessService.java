@@ -16,6 +16,7 @@ public class ProcessService {
         Ps ps=new Ps();
         try {
             long[] pids = sigar.getProcList();
+            double cpuCombined=new CpuService(sigar).getCombinedPer();
             for(long pid : pids){
                 ProcessInfo info = new ProcessInfo();
                 ProcCpu procCpu=new ProcCpu();
@@ -26,8 +27,10 @@ public class ProcessService {
                     continue;
                 }
                 ProcState state=sigar.getProcState(pid);
+
                 info.setPid(pid);
-                info.setCpuPer(procCpu .getTotal()*100/((procCpu .getLastTime()-procCpu .getStartTime())*1.0));
+                double cpuPer=cpuCombined*procCpu .getTotal()*100/((procCpu .getLastTime()-procCpu .getStartTime())*1.0);
+                info.setCpuPer(cpuPer);
 //                info.setCpuPer(getCpuPercent(sigar,pid));
                 info.setMemUse(sigar.getProcMem(pid).getSize());
                 info.setDescription(ProcUtil.getDescription(sigar,pid));

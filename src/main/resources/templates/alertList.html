@@ -34,7 +34,17 @@
                             <div id="day" style="height: 600px"></div>
                         </div>
                         <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
-                            <div id="all"></div>
+                            <table class="table table-row-cell">
+                                <thead>
+                                <td>id</td>
+                                <td>CPU使用率</td>
+                                <td>内存占用</td>
+                                <td>发生时间</td>
+                                <td>操作</td>
+                                </thead>
+                                <tbody id="all">
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -76,8 +86,14 @@ for(var i=0;i<24;i++){
 $.each(alerts,function (i,alert) {
     alert.alertTime=new Date(alert.alertTime);
     var hour=alert.alertTime.getHours();
+    var cpu=alert.cpu;
     hr[hour]++;
-    $("#all").append("<p>"+alert.alertTime.toLocaleString()+"</p>")
+    $("#all").append("                       <tr> <td id='pid'>" + alert.alertId + "</td> \n" +
+    "                        <td>" + (cpu.combined*100).toFixed(1) + "%</td>\n" +
+    "                        <td>" + (alert.memUse).toFixed(1) + "%</td>\n" +
+    "                        <td>" + alert.alertTime.toLocaleString() + "</td>\n" +
+    "                        <td><button class='btn-primary' id='detail'>查看详细信息</button>" +
+    "</td></tr>  ")
 });
 
 var day_chart=echarts.init(document.getElementById("day"));
@@ -107,6 +123,16 @@ hr_option = {
 };
 day_chart.setOption(hr_option);
 
+
+$("td button").click(function () {
+    var id = $(this).parents("tr").find("#pid").text();
+    var processes=[];
+    $.each(alerts,function (item,i) {
+        if(item.alertId==id)
+            processes=item.processes;
+    })
+    alert(processes.length);
+})
 </script>
 
 

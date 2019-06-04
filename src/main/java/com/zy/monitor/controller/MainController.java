@@ -3,6 +3,7 @@ package com.zy.monitor.controller;
 import com.zy.monitor.alert.SimpleAlert;
 import com.zy.monitor.model.User;
 import com.zy.monitor.service.UserService;
+import org.hibernate.validator.constraints.pl.REGON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -72,6 +73,11 @@ public class MainController {
         return "test";
     }
 
+    @RequestMapping("/procSetting")
+    public String goProcSetting(){
+        return "procSetting";
+    }
+
     @RequestMapping("/send")
     @ResponseBody
     public String sendMail(){
@@ -87,6 +93,11 @@ public class MainController {
     @RequestMapping("/alertList")
     public String goAlertList(){
         return "alertList";
+    }
+
+    @RequestMapping("/alertSetting")
+    public String goAlertSetting(){
+        return "alertSetting";
     }
 
     private boolean checkLogin(HttpSession session){
